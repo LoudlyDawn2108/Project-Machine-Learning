@@ -1,0 +1,28 @@
+[project]
+name = "btml"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "cvxopt>=1.3.2",
+    "imageio>=2.37.0",
+    "ipykernel>=7.0.1",
+    "matplotlib>=3.10.6",
+    "meteostat>=1.7.4",
+    "pandas>=2.3.2",
+    "scikit-learn>=1.7.2",
+    "seaborn>=0.13.2",
+]
+
+[tool.pyright]
+exclude = [
+    ".git",
+    "**/__pycache__",
+    "**/node_modules"
+]
+venvPath = "."
+venv = ".venv"
+extraPaths = [
+    ".venv/lib/python3.13/site-packages"
+]
