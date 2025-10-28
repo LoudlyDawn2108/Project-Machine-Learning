@@ -1,16 +1,14 @@
 import numpy as np
 
 
-def rmse(y_true, y_pred):
-    """Tính Root Mean Squared Error (RMSE)"""
+def mse(y_true, y_pred):
+    """Tính Mean Squared Error (MSE)"""
     # Chuyển đổi sang mảng numpy
     y_true = np.array(y_true)
     y_pred = np.array(y_pred)
     
     # Tính trung bình bình phương sai số
-    mse = np.mean((y_true - y_pred) ** 2)
-    # Lấy căn bậc hai
-    return np.sqrt(mse)
+    return np.mean((y_true - y_pred) ** 2)
 
 
 def mae(y_true, y_pred):
