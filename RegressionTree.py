@@ -16,15 +16,21 @@ class MyDecisionTreeRegressor:
         self.random_state = random_state
 
     def fit(self, X, y):
+        X = np.array(X) if not isinstance(X, np.ndarray) else X
+        y = np.array(y).flatten() if not isinstance(y, np.ndarray) else y.flatten()
         self.tree = self._build_tree(X, y)
 
     def _build_tree(self, X, y, depth=0):
         num_samples, num_features = X.shape
+        
+        # Stop conditions
         if num_samples < self.min_samples_split or depth >= self.max_depth:
             return self._calculate_leaf_value(y)
 
         best_split = self._get_best_split(X, y, num_features)
-        if best_split["variance_reduction"] == 0:
+        
+        # Check if no valid split was found or variance reduction is negligible
+        if not best_split or best_split.get("variance_reduction", 0) <= 0:
             return self._calculate_leaf_value(y)
 
         left_indices = X[:, best_split["feature_index"]] <= best_split["threshold"]
@@ -45,15 +51,28 @@ class MyDecisionTreeRegressor:
         max_variance_reduction = -float("inf")
 
         for feature_index in range(num_features):
-            thresholds = set(X[:, feature_index])
+            # Get unique values for this feature
+            feature_values = X[:, feature_index]
+            unique_values = np.unique(feature_values)
+            
+            # If all values are the same, skip this feature
+            if len(unique_values) == 1:
+                continue
+            
+            # Try splitting at midpoints between consecutive unique values
+            thresholds = (unique_values[:-1] + unique_values[1:]) / 2
+            
             for threshold in thresholds:
-                left_indices = X[:, feature_index] <= threshold
-                right_indices = X[:, feature_index] > threshold
+                left_indices = feature_values <= threshold
+                right_indices = feature_values > threshold
 
-                if len(y[left_indices]) == 0 or len(y[right_indices]) == 0:
+                # Skip if split creates empty partition
+                if np.sum(left_indices) == 0 or np.sum(right_indices) == 0:
                     continue
 
-                variance_reduction = self._calculate_variance_reduction(y, y[left_indices], y[right_indices])
+                variance_reduction = self._calculate_variance_reduction(
+                    y, y[left_indices], y[right_indices]
+                )
 
                 if variance_reduction > max_variance_reduction:
                     max_variance_reduction = variance_reduction
@@ -68,22 +87,29 @@ class MyDecisionTreeRegressor:
     def _calculate_variance_reduction(self, parent, left_child, right_child):
         weight_left = len(left_child) / len(parent)
         weight_right = len(right_child) / len(parent)
-        variance_reduction = self._variance(parent) - (weight_left * self._variance(left_child) + weight_right * self._variance(right_child))
+        variance_reduction = self._variance(parent) - (
+            weight_left * self._variance(left_child) + 
+            weight_right * self._variance(right_child)
+        )
         return variance_reduction
     
     def _variance(self, y):
-        return y.var() if len(y) > 0 else 0
+        return np.var(y) if len(y) > 0 else 0
 
     def _calculate_leaf_value(self, y):
-        return TreeNode(value=y.mean())
+        return TreeNode(value=np.mean(y))
     
     def predict(self, X):
-        return [self._predict_sample(sample, self.tree) for sample in X]
+        # Convert to numpy array and iterate over rows
+        X = np.array(X) if not isinstance(X, np.ndarray) else X
+        return np.array([self._predict_sample(sample, self.tree) for sample in X])
 
     def _predict_sample(self, sample, tree):
+        # Base case: leaf node
         if tree.value is not None:
-            return tree.value # Nút lá
+            return tree.value
 
+        # Recursive case: internal node
         feature_index = tree.feature_index
         threshold = tree.threshold
 

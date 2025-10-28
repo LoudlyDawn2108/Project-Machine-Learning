@@ -14,6 +14,8 @@ class MyRandomForestRegressor:
         self.trees = []
 
     def fit(self, X, y):
+        X = np.array(X) if not isinstance(X, np.ndarray) else X
+        y = np.array(y).flatten() if not isinstance(y, np.ndarray) else y.flatten()
         np.random.seed(self.random_state)
         self.trees = []
         n_samples = X.shape[0]
