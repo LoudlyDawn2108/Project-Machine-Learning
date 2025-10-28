@@ -9,11 +9,10 @@ class TreeNode:
         self.value = value                  # Giá trị dự đoán (nếu là lá)
 
 class MyDecisionTreeRegressor:
-    def __init__(self, max_depth=100, min_samples_split=2, random_state=42):
+    def __init__(self, max_depth=100, min_samples_split=2):
         self.max_depth = max_depth
         self.min_samples_split = min_samples_split
         self.tree = None
-        self.random_state = random_state
 
     def fit(self, X, y):
         X = np.array(X) if not isinstance(X, np.ndarray) else X

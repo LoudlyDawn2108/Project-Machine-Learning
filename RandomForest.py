@@ -25,7 +25,7 @@ class MyRandomForestRegressor:
             X_sample = X[indices]
             y_sample = y[indices]
 
-            tree = MyDecisionTreeRegressor(max_depth=self.max_depth, random_state=self.random_state)
+            tree = MyDecisionTreeRegressor(max_depth=self.max_depth)
             tree.fit(X_sample, y_sample)
             self.trees.append(tree)
 
