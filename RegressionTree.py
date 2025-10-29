@@ -19,14 +19,14 @@ class TreeNode:
         self.value = value  # Giá trị dự đoán (None nếu internal node)
 
 class MyDecisionTreeRegressor:
-    """Decision Tree: chia đệ quy để minimize variance"""
+    """Decision Tree: chia đệ quy để giảm phương sai"""
     
     def __init__(self, max_depth=100, min_samples_split=2, min_samples_leaf=1):
         """
         Args:
             max_depth: Độ sâu tối đa (tránh overfit)
-            min_samples_split: Số samples tối thiểu để split node
-            min_samples_leaf: Số samples tối thiểu ở leaf node
+            min_samples_split: Số mẫu tối thiểu để chia nút
+            min_samples_leaf: Số mẫu tối thiểu ở nút lá
         """
         self.max_depth = max_depth  # Giới hạn độ sâu cây
         self.min_samples_split = min_samples_split  # Số mẫu tối thiểu để chia
@@ -116,7 +116,7 @@ class MyDecisionTreeRegressor:
         return best_split  # Trả về ngưỡng chia tốt nhất
 
     def _calculate_variance_reduction(self, parent, left_child, right_child):
-        """Tính độ giảm variance: Var(parent) - weighted Var(children)"""
+        """Tính độ giảm phương sai: Var(parent) - trọng số Var(children)"""
         weight_left = len(left_child) / len(parent)  # Tỷ lệ mẫu bên trái
         weight_right = len(right_child) / len(parent)  # Tỷ lệ mẫu bên phải
         
@@ -132,7 +132,7 @@ class MyDecisionTreeRegressor:
         return np.var(y) if len(y) > 0 else 0  # Trả về 0 nếu y rỗng
 
     def _calculate_leaf_value(self, y):
-        """Tạo leaf node với giá trị = mean(y)"""
+        """Tạo nút lá    với giá trị = mean(y)"""
         return TreeNode(value=np.mean(y))  # Dự đoán = trung bình y
     
     def predict(self, X):
