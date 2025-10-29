@@ -8,7 +8,7 @@ class MyLinearRegression:
         Args: 
             fit_intercept: True = có hệ số chặn w0, False = không có w0
         """
-        self.fit_intercept = fit_intercept  # Lưu flag có học w0 hay không
+        self.fit_intercept = fit_intercept  # Lưu cấu hình: có thêm hệ số chặn w0 hay không
 
     @property
     def coef_(self) -> np.ndarray:
@@ -30,15 +30,16 @@ class MyLinearRegression:
         """
         new_data = np.copy(X)  # Copy để không thay đổi dữ liệu gốc
         
-        if self.fit_intercept:  # Nếu cần học w0
+        if self.fit_intercept:  # Nếu model có w0
             intercept = np.ones((new_data.shape[0], 1))  # Tạo cột 1 cho w0
             new_data = np.hstack((intercept, new_data))  # Ghép cột 1 vào đầu: [1, x1, x2, ...]
 
         self.data = new_data  # Lưu data đã thêm intercept
         
         # Normal Equation: w = (X^T X)^(-1) X^T y
-        self.w = np.linalg.pinv(self.data.T @ self.data) @ self.data.T @ y  # pinv: pseudo-inverse (ổn định hơn inv)
-
+        self.w = np.linalg.pinv(self.data.T @ self.data) @ self.data.T @ y  # Tính w = (X^T X)^(-1) X^T y
+        # self.data.T: X^T
+        # self.data: X
     def predict(self, x):
         """
         Dự đoán: y_pred = X @ w
@@ -50,7 +51,7 @@ class MyLinearRegression:
         """
         new_x = np.copy(x)  # Copy để không thay đổi dữ liệu gốc
         
-        if self.fit_intercept:  # Nếu có w0
+        if self.fit_intercept:  # Nếu model có w0
             intercept = np.ones((new_x.shape[0], 1))  # Tạo cột 1 để khớp với w
             new_x = np.hstack((intercept, new_x))  # Ghép cột 1 vào đầu
 
