@@ -7,9 +7,11 @@ class MyRandomForestRegressor:
     random_state: int
     trees: list[MyDecisionTreeRegressor]
 
-    def __init__(self, n_estimators=100, max_depth=100, random_state=42):
+    def __init__(self, n_estimators=100, max_depth=100, min_samples_split=2, min_samples_leaf=1, random_state=42):
         self.n_estimators = n_estimators
         self.max_depth = max_depth
+        self.min_samples_split = min_samples_split
+        self.mix_samples_leaf = min_samples_leaf
         self.random_state = random_state
         self.trees = []
 
@@ -25,7 +27,7 @@ class MyRandomForestRegressor:
             X_sample = X[indices]
             y_sample = y[indices]
 
-            tree = MyDecisionTreeRegressor(max_depth=self.max_depth)
+            tree = MyDecisionTreeRegressor(max_depth=self.max_depth, min_samples_split=self.min_samples_split, min_samples_leaf=self.mix_samples_leaf)
             tree.fit(X_sample, y_sample)
             self.trees.append(tree)
 

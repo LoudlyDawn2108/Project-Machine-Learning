@@ -9,9 +9,10 @@ class TreeNode:
         self.value = value                  # Giá trị dự đoán (nếu là lá)
 
 class MyDecisionTreeRegressor:
-    def __init__(self, max_depth=100, min_samples_split=2):
+    def __init__(self, max_depth=100, min_samples_split=2, min_samples_leaf=1):
         self.max_depth = max_depth
         self.min_samples_split = min_samples_split
+        self.min_samples_leaf = min_samples_leaf
         self.tree = None
 
     def fit(self, X, y):
@@ -34,6 +35,10 @@ class MyDecisionTreeRegressor:
 
         left_indices = X[:, best_split["feature_index"]] <= best_split["threshold"]
         right_indices = X[:, best_split["feature_index"]] > best_split["threshold"]
+
+        # Check min_samples_leaf constraint
+        if np.sum(left_indices) < self.min_samples_leaf or np.sum(right_indices) < self.min_samples_leaf:
+            return self._calculate_leaf_value(y)
 
         left_subtree = self._build_tree(X[left_indices], y[left_indices], depth + 1)
         right_subtree = self._build_tree(X[right_indices], y[right_indices], depth + 1)
@@ -65,8 +70,10 @@ class MyDecisionTreeRegressor:
                 left_indices = feature_values <= threshold
                 right_indices = feature_values > threshold
 
-                # Skip if split creates empty partition
-                if np.sum(left_indices) == 0 or np.sum(right_indices) == 0:
+                # Skip if split creates empty partition or violates min_samples_leaf
+                left_count = np.sum(left_indices)
+                right_count = np.sum(right_indices)
+                if left_count < self.min_samples_leaf or right_count < self.min_samples_leaf:
                     continue
 
                 variance_reduction = self._calculate_variance_reduction(
