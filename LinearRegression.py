@@ -56,4 +56,6 @@ class MyLinearRegression:
             intercept = np.ones((new_x.shape[0], 1))  # Tạo cột 1 để khớp với w
             new_x = np.hstack((intercept, new_x))  # Ghép cột 1 vào đầu
 
-        return new_x @ self.w
+        return new_x @ self.w  # Phép nhân ma trận: y = Xw
+    
+    

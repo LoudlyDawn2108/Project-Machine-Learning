@@ -57,3 +57,5 @@ class MyRandomForestRegressor:
         predictions = np.array([tree.predict(X) for tree in self.trees])  # Lấy predictions từ tất cả trees
         
         return np.mean(predictions, axis=0)  # Trung bình theo axis=0 (theo từng sample)
+    
+    
