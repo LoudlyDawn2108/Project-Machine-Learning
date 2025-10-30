@@ -56,3 +56,5 @@ class MyLinearRegression:
             new_x = np.hstack((intercept, new_x))  # Ghép cột 1 vào đầu
 
         return new_x @ self.w  # Phép nhân ma trận: y = Xw
+    
+    
