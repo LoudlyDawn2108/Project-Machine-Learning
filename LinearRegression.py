@@ -6,9 +6,9 @@ class MyLinearRegression:
     def __init__(self, fit_intercept: bool = True) -> None:
         """
         Args: 
-            fit_intercept: True = có hệ số chặn w0, False = không có w0
+            fit_intercept: True = có sử dụng bias trick, False = không sử dụng bias trick
         """
-        self.fit_intercept = fit_intercept  # Lưu cấu hình: có thêm hệ số chặn w0 hay không
+        self.fit_intercept = fit_intercept
 
     @property
     def coef_(self) -> np.ndarray:
@@ -22,7 +22,7 @@ class MyLinearRegression:
     
     def fit(self, X, y) -> None:
         """
-        Train model bằng Normal Equation: w = (X^T X)^(-1) X^T y
+        Train model bằng công thức: w = (X^T X)^(-1) X^T y
         
         Args:
             X: Ma trận features (n_samples, n_features)
@@ -36,10 +36,11 @@ class MyLinearRegression:
 
         self.data = new_data  # Lưu data đã thêm intercept
         
-        # Normal Equation: w = (X^T X)^(-1) X^T y
-        self.w = np.linalg.pinv(self.data.T @ self.data) @ self.data.T @ y  # Tính w = (X^T X)^(-1) X^T y
+        # Sử dụng công thức tính w = (X^T X)^(-1) X^T y
         # self.data.T: X^T
         # self.data: X
+        self.w = np.linalg.pinv(self.data.T @ self.data) @ self.data.T @ y
+
     def predict(self, x):
         """
         Dự đoán: y_pred = X @ w
@@ -55,4 +56,4 @@ class MyLinearRegression:
             intercept = np.ones((new_x.shape[0], 1))  # Tạo cột 1 để khớp với w
             new_x = np.hstack((intercept, new_x))  # Ghép cột 1 vào đầu
 
-        return new_x @ self.w  # Phép nhân ma trận: y = Xw
+        return new_x @ self.w

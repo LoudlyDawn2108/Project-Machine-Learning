@@ -20,17 +20,24 @@ class TreeNode:
 
 class MyDecisionTreeRegressor:
     """Decision Tree: chia đệ quy để giảm phương sai"""
-    
-    def __init__(self, max_depth=100, min_samples_split=2, min_samples_leaf=1):
+
+    def __init__(self, max_depth=100, min_samples_split=2, min_samples_leaf=1, max_features=None):
         """
         Args:
             max_depth: Giới hạn độ sâu cây
             min_samples_split: Số samples tối thiểu để chia
-            min_samples_leaf: SSố samples tối thiểu ở lá
+            min_samples_leaf: Số samples tối thiểu ở lá
+            max_features: Số features tối đa để xem xét khi split
+                         None: dùng tất cả features
+                         int: dùng max_features features
+                         float: dùng max_features * n_features features
+                         'sqrt': dùng sqrt(n_features) features
+                         'log2': dùng log2(n_features) features
         """
         self.max_depth = max_depth
         self.min_samples_split = min_samples_split
         self.min_samples_leaf = min_samples_leaf
+        self.max_features = max_features
         self.tree = None
 
     def fit(self, X, y):
@@ -79,7 +86,10 @@ class MyDecisionTreeRegressor:
         best_split = {}  # Dict lưu thông tin split tốt nhất
         max_variance_reduction = -float("inf")  # Khởi tạo giá trị tối đa
 
-        for feature_index in range(num_features):  # Thử từng feature
+        # Xác định số features để xem xét
+        feature_indices = self._get_feature_indices(num_features)
+        
+        for feature_index in feature_indices:  # Thử từng feature
             feature_values = X[:, feature_index]  # Lấy values của feature
             unique_values = np.unique(feature_values)  # Lấy các giá trị unique
             
@@ -115,8 +125,29 @@ class MyDecisionTreeRegressor:
 
         return best_split  # Trả về split tốt nhất
 
+    def _get_feature_indices(self, num_features):
+        """Xác định các feature indices để xem xét dựa trên max_features"""
+        if self.max_features is None:
+            # Dùng tất cả features
+            return range(num_features)
+        
+        # Tính số features cần chọn
+        if isinstance(self.max_features, int):
+            max_features = min(self.max_features, num_features)
+        elif isinstance(self.max_features, float):
+            max_features = max(1, int(self.max_features * num_features))
+        elif self.max_features == 'sqrt':
+            max_features = max(1, int(np.sqrt(num_features)))
+        elif self.max_features == 'log2':
+            max_features = max(1, int(np.log2(num_features)))
+        else:
+            raise ValueError(f"Invalid max_features value: {self.max_features}")
+        
+        # Chọn ngẫu nhiên max_features features
+        return np.random.choice(num_features, max_features, replace=False)
+
     def _calculate_variance_reduction(self, parent, left_child, right_child):
-        """Tính độ giảm variance: Var(parent) - weighted Var(children)"""
+        """Tính độ giảm phương sai: Var(parent) - trọng số Var(children)"""
         weight_left = len(left_child) / len(parent)  # Tỷ lệ mẫu bên trái
         weight_right = len(right_child) / len(parent)  # Tỷ lệ mẫu bên phải
         

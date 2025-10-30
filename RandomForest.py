@@ -4,19 +4,26 @@ from RegressionTree import MyDecisionTreeRegressor
 class MyRandomForestRegressor:
     """Random Forest: Ensemble nhiều Decision Trees, predict = average"""
     
-    def __init__(self, n_estimators=100, max_depth=100, min_samples_split=2, min_samples_leaf=1, random_state=42):
+    def __init__(self, n_estimators=100, max_depth=100, min_samples_split=2, min_samples_leaf=1, max_features=1.0, random_state=42):
         """
         Args:
             n_estimators: Số lượng trees trong forest
             max_depth: Độ sâu tối đa của mỗi tree
             min_samples_split: Số samples tối thiểu để split
             min_samples_leaf: Số samples tối thiểu ở leaf
+            max_features: Số features tối đa để xem xét khi split (default 1.0 như sklearn)
+                         None hoặc 1.0: dùng tất cả features
+                         int: dùng max_features features
+                         float (0.0 < x < 1.0): dùng max_features * n_features features
+                         'sqrt': dùng sqrt(n_features) features
+                         'log2': dùng log2(n_features) features
             random_state: Seed cho reproducibility
         """
         self.n_estimators = n_estimators  # Số trees
         self.max_depth = max_depth  # Độ sâu cây
         self.min_samples_split = min_samples_split  # Min samples để split
         self.min_samples_leaf = min_samples_leaf  # Min samples ở leaf
+        self.max_features = max_features  # Max features để xem xét
         self.random_state = random_state  # Seed
         self.trees = []  # List chứa các trees
 
@@ -39,7 +46,8 @@ class MyRandomForestRegressor:
             tree = MyDecisionTreeRegressor(
                 max_depth=self.max_depth,
                 min_samples_split=self.min_samples_split,
-                min_samples_leaf=self.min_samples_leaf
+                min_samples_leaf=self.min_samples_leaf,
+                max_features=self.max_features
             )
             tree.fit(X_sample, y_sample)  # Fit tree
             self.trees.append(tree)  # Thêm tree vào list
