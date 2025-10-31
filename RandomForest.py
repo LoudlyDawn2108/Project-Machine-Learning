@@ -19,12 +19,12 @@ class MyRandomForestRegressor:
                          'log2': dùng log2(n_features) features
             random_state: Seed cho reproducibility
         """
-        self.n_estimators = n_estimators  # Số trees
-        self.max_depth = max_depth  # Độ sâu cây
-        self.min_samples_split = min_samples_split  # Min samples để split
-        self.min_samples_leaf = min_samples_leaf  # Min samples ở leaf
-        self.max_features = max_features  # Max features để xem xét
-        self.random_state = random_state  # Seed
+        self.n_estimators = n_estimators
+        self.max_depth = max_depth
+        self.min_samples_split = min_samples_split
+        self.min_samples_leaf = min_samples_leaf
+        self.max_features = max_features
+        self.random_state = random_state
         self.trees = []  # List chứa các trees
 
     def fit(self, X, y):
