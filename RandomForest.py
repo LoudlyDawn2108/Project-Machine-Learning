@@ -32,7 +32,7 @@ class MyRandomForestRegressor:
         X = np.array(X) if not isinstance(X, np.ndarray) else X  # Chuyển về numpy array
         y = np.array(y).flatten() if not isinstance(y, np.ndarray) else y.flatten()  # Flatten y
         
-        np.random.seed(self.random_state)  # Set seed để reproducible
+        np.random.seed(self.random_state)  # Set seed để reproducible có thể tái tạo
         self.trees = []  # Reset list trees
         n_samples = X.shape[0]  # Số samples
 
